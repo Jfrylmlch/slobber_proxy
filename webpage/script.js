@@ -12,13 +12,15 @@ async function getRedirectedQuery() {
     return redirectedQuery;
 }
 
-async function makeQuery(query) {
+async function getQueryResults(query) {
     let result = await fetch(`http://127.0.0.1:3333/find/${query}`);
-    result = result.json();
-    return result;
+    result = await result.json();
+    if (result) {
+        return result;
+    }
 }
 
-function showResult(result) {
+function showQueryResults(result) {
     if (result.length <= 0) return;
     const resultsContainer = document.querySelector("#lookup-result");
     resultsContainer.replaceChildren();
@@ -57,13 +59,7 @@ function showResult(result) {
     resultsContainer.appendChild(resultsList);
 }
 
-async function getQueryResults(query) {
-    const result = await makeQuery(query);
-    if (result) {
-        showResult(result);
-        return result;
-    }
-}
+
 
 async function getDictInfo() {
     const res = await fetch("http://127.0.0.1:8013/slob");
@@ -141,6 +137,22 @@ function showDictInfo(dictInfo) {
     html.appendChild(body);
     return html;
 }
+
+async function getRandomArticle() {
+    const res = await fetch("http://127.0.0.1:8013/random");
+    const data = await res.json();
+    if (data) {
+        return data;
+    }
+}
+
+async function showRandomArticle(data) {
+    const result = await getQueryResults(data.label);
+    showQueryResults(result)
+    contentFrame.src = "http://127.0.0.1:8013" + data.url;
+    document.querySelector("#lookup-result ul > li > a").click();
+}
+
 // ------------------------------------------------------------------------//
 // ------------------------------- main ---------------------------------- //
 // ------------------------------------------------------------------------//
@@ -152,9 +164,10 @@ const contentFrame = document.querySelector("#content");
 const onSearchTextChange = async (e) => {
     const retrieved = sessionStorage.getItem(e.target.value);
     if (retrieved) {
-        showResult(JSON.parse(retrieved));
+        showQueryResults(JSON.parse(retrieved));
     } else {
         const result = await getQueryResults(e.target.value);
+        showQueryResults(result)
         if (result.length > 0) {
             const stringifedResult = JSON.stringify(result);
             sessionStorage.setItem(e.target.value, stringifedResult);
@@ -174,12 +187,13 @@ setTimeout(async function temp() {
     if (redirectedQuery && redirectedQuery != prevQuery) {
         if (retrieved) {
             try {
-                showResult(JSON.parse(retrieved));
+                showQueryResults(JSON.parse(retrieved));
             } catch (err) {
                 console.log(err);
             }
         } else {
             const result = await getQueryResults(redirectedQuery);
+            showQueryResults(result)
             const stringifedResult = JSON.stringify(result);
             if (sessionStorage.getItem(prevQuery) != stringifedResult) {
                 sessionStorage.setItem(redirectedQuery, stringifedResult);
@@ -202,33 +216,21 @@ dictLink.addEventListener("click", async function () {
     contentFrame.srcdoc = dictInfoPageContent.outerHTML;
 });
 
-async function getRandomArticle() {
-    const res = await fetch("http://127.0.0.1:8013/random");
-    const data = await res.json();
-    if (data) {
-        await getQueryResults(data.label);
-        contentFrame.src = "http://127.0.0.1:8013" + data.url;
-    }
-    document.querySelector("#lookup-result ul > li > a").click()
-}
-
 const randomLink = document.querySelector("#random-link");
 randomLink.addEventListener("click", async function () {
-    await getRandomArticle();
+    const data = await getRandomArticle();
+    await showRandomArticle(data)
 });
-
 
 // not working due to cross-origin fetching
 // contentFrame.addEventListener("load", async function(){
 //     contentHeader.style.display = "flex";
-     // const pathComponents = this.contentWindow.location.pathname.split("/");
-     // const slobId = pathComponents[2]
-     // const query = pathComponents[3]
-     // const res = await fetch(`http://127.0.0.1:8013/slob/${slobId}`)
-     // const currItemDictInfo = await res.json();
-     // const dictName = currItemDictInfo.tags.label
+// const pathComponents = this.contentWindow.location.pathname.split("/");
+// const slobId = pathComponents[2]
+// const query = pathComponents[3]
+// const res = await fetch(`http://127.0.0.1:8013/slob/${slobId}`)
+// const currItemDictInfo = await res.json();
+// const dictName = currItemDictInfo.tags.label
 //     const headerTitle = document.querySelector("#header-title");
 //     headerTitle.innerText = `${dictName}: ${query}`;
 // })
-
-
