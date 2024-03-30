@@ -59,8 +59,6 @@ function showQueryResults(result) {
     resultsContainer.appendChild(resultsList);
 }
 
-
-
 async function getDictInfo() {
     const res = await fetch("http://127.0.0.1:8013/slob");
     const dictinfo = res.json();
@@ -148,7 +146,7 @@ async function getRandomArticle() {
 
 async function showRandomArticle(data) {
     const result = await getQueryResults(data.label);
-    showQueryResults(result)
+    showQueryResults(result);
     contentFrame.src = "http://127.0.0.1:8013" + data.url;
     document.querySelector("#lookup-result ul > li > a").click();
 }
@@ -167,7 +165,7 @@ const onSearchTextChange = async (e) => {
         showQueryResults(JSON.parse(retrieved));
     } else {
         const result = await getQueryResults(e.target.value);
-        showQueryResults(result)
+        showQueryResults(result);
         if (result.length > 0) {
             const stringifedResult = JSON.stringify(result);
             sessionStorage.setItem(e.target.value, stringifedResult);
@@ -193,7 +191,7 @@ setTimeout(async function temp() {
             }
         } else {
             const result = await getQueryResults(redirectedQuery);
-            showQueryResults(result)
+            showQueryResults(result);
             const stringifedResult = JSON.stringify(result);
             if (sessionStorage.getItem(prevQuery) != stringifedResult) {
                 sessionStorage.setItem(redirectedQuery, stringifedResult);
@@ -219,7 +217,7 @@ dictLink.addEventListener("click", async function () {
 const randomLink = document.querySelector("#random-link");
 randomLink.addEventListener("click", async function () {
     const data = await getRandomArticle();
-    await showRandomArticle(data)
+    await showRandomArticle(data);
 });
 
 // not working due to cross-origin fetching
