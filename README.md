@@ -27,6 +27,12 @@ For security reasons, browsers restrict cross-origin HTTP requests initiated fro
 
 [Aard2-Web](https://github.com/itkach/aard2-web) has provided a great web frontend interface. To enable it to communicate with the proxy server, I reimplemented the frontend with reference to the original code. The UI behaviour was rewritten in pure Vanilla Javascript instead of jQuery to further strip off library dependencies. Despite different underlying logic, I strived to offer an user experience similar to Aard2-Web so the their interface were basically identical except that the sidebar is now resizable. 
 
+To prevent an overwhelming number of requests from the proxy frontend, a long polling mechanism has been implemented, allowing the frontend to receive data as soon as it becomes available, thereby reducing the frequency of unnecessary requests.
+
+## Build From Source
+```
+go build -o ./build/main ./main.go
+```
 
 ## Contribution
 Feel free to file issues or pull requests.
