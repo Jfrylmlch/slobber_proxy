@@ -160,17 +160,20 @@ const contentHeader = document.querySelector("#content-header");
 const contentFrame = document.querySelector("#content");
 
 const onSearchTextChange = async (e) => {
-    const retrieved = sessionStorage.getItem(e.target.value);
-    if (retrieved) {
-        showQueryResults(JSON.parse(retrieved));
-    } else {
-        const result = await getQueryResults(e.target.value);
-        showQueryResults(result);
-        if (result.length > 0) {
-            const stringifedResult = JSON.stringify(result);
-            sessionStorage.setItem(e.target.value, stringifedResult);
-        }
-    }
+    // const retrieved = sessionStorage.getItem(e.target.value);
+    // if (retrieved) {
+    //     showQueryResults(JSON.parse(retrieved));
+    // } else {
+    //     const result = await getQueryResults(e.target.value);
+    //     showQueryResults(result);
+    //     if (result.length > 0) {
+    //         const stringifedResult = JSON.stringify(result);
+    //         sessionStorage.setItem(e.target.value, stringifedResult);
+    //     }
+    // }
+
+    const result = await getQueryResults(e.target.value);
+    showQueryResults(result);
 };
 
 // searchBox.addEventListener("keydown", onSearchTextChange);
@@ -181,27 +184,33 @@ searchBox.addEventListener("paste", onSearchTextChange);
 let prevQuery = "";
 setTimeout(async function temp() {
     const redirectedQuery = await getRedirectedQuery();
-    const retrieved = sessionStorage.getItem(redirectedQuery);
-    if (redirectedQuery && redirectedQuery != prevQuery) {
-        if (retrieved) {
-            try {
-                showQueryResults(JSON.parse(retrieved));
-            } catch (err) {
-                console.log(err);
-            }
-        } else {
-            const result = await getQueryResults(redirectedQuery);
-            showQueryResults(result);
-            const stringifedResult = JSON.stringify(result);
-            if (sessionStorage.getItem(prevQuery) != stringifedResult) {
-                sessionStorage.setItem(redirectedQuery, stringifedResult);
-            }
-        }
-        document.querySelector("#lookup-result ul > li > a").click();
-        // contentFrame.src = document.querySelector("li > a").href;
-        prevQuery = redirectedQuery;
+    // const retrieved = sessionStorage.getItem(redirectedQuery);
+    // if (redirectedQuery && redirectedQuery != prevQuery) {
+    //     if (retrieved) {
+    //         try {
+    //             showQueryResults(JSON.parse(retrieved));
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
+    //     } else {
+    //         const result = await getQueryResults(redirectedQuery);
+    //         showQueryResults(result);
+    //         const stringifedResult = JSON.stringify(result);
+    //         if (sessionStorage.getItem(prevQuery) != stringifedResult) {
+    //             sessionStorage.setItem(redirectedQuery, stringifedResult);
+    //         }
+    //     }
+    //     document.querySelector("#lookup-result ul > li > a").click();
+    //     // contentFrame.src = document.querySelector("li > a").href;
+    //     prevQuery = redirectedQuery;
 
-        // searchBox.value = redirectedQuery;
+    //     // searchBox.value = redirectedQuery;
+    // }
+    if (redirectedQuery && redirectedQuery != prevQuery) {
+        const result = await getQueryResults(redirectedQuery);
+        showQueryResults(result);
+        document.querySelector("#lookup-result ul > li > a").click();
+        prevQuery = redirectedQuery;
     }
     setTimeout(temp, 100);
 }, 100);

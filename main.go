@@ -51,7 +51,6 @@ func GetQueryResult(w http.ResponseWriter, r *http.Request) {
 func MakeQuery(query string) ([]byte, error) {
 	whiteSpacesRe := regexp.MustCompile(`\s+`)
 	query = whiteSpacesRe.ReplaceAllString(strings.TrimSpace(query), "+")
-
 	if len(query) <= 0 {
 		return []byte{}, nil
 	}
@@ -59,7 +58,6 @@ func MakeQuery(query string) ([]byte, error) {
 	if err != nil {
 		log.Fatalf("slobber is not running properly. make sure slobber is listening at 127.0.0.1:8013: %s\n", err)
 	}
-
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
